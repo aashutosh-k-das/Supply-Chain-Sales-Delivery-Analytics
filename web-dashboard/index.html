@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supply Chain Sales, Profitability & Delivery Performance Analytics</title>
+  <meta name="description" content="Executive Portfolio Analytics Dashboard analyzing sales, profitability, carrier SLAs, and late delivery risk on 180,519 DataCo supply chain transactions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app" class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SupplyChain<span class="highlight">IQ</span></span>
+          <span class="brand-badge">Executive</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <button class="nav-item active" data-tab="tab-overview" id="nav-btn-overview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Executive Overview</span>
+        </button>
+        <button class="nav-item" data-tab="tab-trends" id="nav-btn-trends">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Sales & Profit Trends</span>
+        </button>
+        <button class="nav-item" data-tab="tab-categories" id="nav-btn-categories">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          <span>Category Margins</span>
+        </button>
+        <button class="nav-item" data-tab="tab-delivery" id="nav-btn-delivery">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          <span>Carrier SLAs & Delivery</span>
+        </button>
+        <button class="nav-item" data-tab="tab-regions" id="nav-btn-regions">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span>Regional Distribution</span>
+        </button>
+        <button class="nav-item" data-tab="tab-simulator" id="nav-btn-simulator">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+          <span>ML Risk Simulator</span>
+          <span class="pill-new">AI</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="dataset-meta-card">
+          <div class="meta-row">
+            <span class="meta-dot pulse"></span>
+            <span class="meta-label">DataCo Smart Dataset</span>
+          </div>
+          <div class="meta-details">180,519 order-items &bull; 65,752 orders</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+      <!-- Top App Bar -->
+      <header class="app-header">
+        <div class="header-left">
+          <h1 class="page-title">Executive Supply Chain Analytics</h1>
+          <p class="page-subtitle">Sales, Profitability & Delivery SLA Performance Dashboard</p>
+        </div>
+        <div class="header-right">
+          <div class="live-status-pill">
+            <span class="status-indicator"></span>
+            <span>Data Pipeline: Verified (180.5K rows)</span>
+          </div>
+          <a href="https://github.com/aashutosh-k-das/Supply-Chain-Sales-Delivery-Analytics" target="_blank" rel="noreferrer" class="github-btn" id="github-link-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span>GitHub Repository</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Top KPI Row (Always Visible) -->
+      <section class="kpi-grid" aria-label="Key Performance Indicators">
+        <div class="kpi-card" id="kpi-total-sales">
+          <div class="kpi-header">
+            <span class="kpi-label">TOTAL SALES (GROSS)</span>
+            <div class="kpi-icon-badge blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+          </div>
+          <div class="kpi-value">$36.78M</div>
+          <div class="kpi-footer">
+            <span class="trend positive">&uparrow; Across 180,519 items</span>
+            <span class="kpi-sub">$33.05M item revenue</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpi-total-profit">
+          <div class="kpi-header">
+            <span class="kpi-label">NET PROFIT (DEDUPED)</span>
+            <div class="kpi-icon-badge green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            </div>
+          </div>
+          <div class="kpi-value">$1,388,652</div>
+          <div class="kpi-footer">
+            <span class="trend neutral">3.78% Net Margin</span>
+            <span class="kpi-sub">Order-level deduplicated</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpi-distinct-orders">
+          <div class="kpi-header">
+            <span class="kpi-label">DISTINCT ORDERS</span>
+            <div class="kpi-icon-badge indigo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-2z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            </div>
+          </div>
+          <div class="kpi-value">65,752</div>
+          <div class="kpi-footer">
+            <span class="trend positive">AOV: $559.45</span>
+            <span class="kpi-sub">$21.12 avg profit/order</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpi-late-rate">
+          <div class="kpi-header">
+            <span class="kpi-label">LATE DELIVERY RATE</span>
+            <div class="kpi-icon-badge red">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+          </div>
+          <div class="kpi-value warning-text">54.83%</div>
+          <div class="kpi-footer">
+            <span class="trend negative">&uparrow; 98,977 shipments</span>
+            <span class="kpi-sub">Avg delay: +0.57 days</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpi-loss-orders">
+          <div class="kpi-header">
+            <span class="kpi-label">PROFIT-LOSS ORDERS</span>
+            <div class="kpi-icon-badge amber">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+          </div>
+          <div class="kpi-value">12,347</div>
+          <div class="kpi-footer">
+            <span class="trend negative">18.78% of all orders</span>
+            <span class="kpi-sub">Erodes ~$450k profit</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content 1: Overview -->
+      <section class="tab-pane active" id="tab-overview">
+        <div class="content-grid two-one">
+          <div class="panel glass">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Monthly Revenue & Profitability Trajectory</h2>
+                <p class="panel-subtitle">Total sales (USD) vs Deduplicated Net Profit over 37 operational months (2015–2018)</p>
+              </div>
+              <div class="chart-controls">
+                <button class="pill-btn active" id="btn-toggle-revenue">Combined</button>
+                <button class="pill-btn" id="btn-toggle-margin">Margin %</button>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 340px;">
+              <canvas id="overviewTrendChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Executive Takeaways</h2>
+              <span class="badge-tag">Audited Findings</span>
+            </div>
+            <div class="takeaways-list">
+              <div class="takeaway-card red-border">
+                <div class="takeaway-icon red">⚠️</div>
+                <div class="takeaway-content">
+                  <h4>Severe SLA Breakdown in First Class</h4>
+                  <p><strong>95.32% of First Class shipments</strong> are late! Despite being scheduled for 1-day delivery, actual courier transit averages 2.0 days.</p>
+                </div>
+              </div>
+
+              <div class="takeaway-card amber-border">
+                <div class="takeaway-icon amber">📉</div>
+                <div class="takeaway-content">
+                  <h4>18.78% of Orders Operate at Net Loss</h4>
+                  <p>12,347 orders lost money, primarily driven by excessive discounts (>20%) on low-margin categories like Cleats and Footwear.</p>
+                </div>
+              </div>
+
+              <div class="takeaway-card green-border">
+                <div class="takeaway-icon green">🌍</div>
+                <div class="takeaway-content">
+                  <h4>Europe & Latam Dominate (57.5% Revenue)</h4>
+                  <p>Europe ($10.87M, 4.06% margin) and Latam ($10.28M, 3.42% margin) drive volume. Pacific Asia delivers highest margin (4.42%).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Row: Regional & Shipping Mode Snapshots -->
+        <div class="content-grid one-one">
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Delivery SLA Failure Rate by Shipping Mode</h2>
+              <span class="panel-tag">Lateness Probability</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 280px;">
+              <canvas id="overviewShippingChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Global Revenue Distribution by Market</h2>
+              <span class="panel-tag">USD Share</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 280px;">
+              <canvas id="overviewRegionDoughnut"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content 2: Sales & Profit Trends -->
+      <section class="tab-pane" id="tab-trends">
+        <div class="panel glass">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Full 37-Month Performance Time Series (2015 – 2018)</h2>
+              <p class="panel-subtitle">Audited monthly order volumes, gross revenue, net profit, and profit margin fluctuations</p>
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper" style="height: 380px;">
+            <canvas id="fullTrendsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="panel glass" style="margin-top: 1.5rem;">
+          <div class="panel-header">
+            <h2 class="panel-title">Monthly Financial Breakdown Table</h2>
+            <div class="table-search-box">
+              <input type="text" id="monthly-search" placeholder="Search year-month (e.g. 2017-09)...">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="monthly-data-table">
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Total Sales</th>
+                  <th>Item Revenue</th>
+                  <th>Distinct Orders</th>
+                  <th>Net Profit</th>
+                  <th>Profit Margin</th>
+                  <th>Health Status</th>
+                </tr>
+              </thead>
+              <tbody id="monthly-table-body">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content 3: Category Margins -->
+      <section class="tab-pane" id="tab-categories">
+        <div class="content-grid two-one">
+          <div class="panel glass">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Top 10 Product Categories by Sales Revenue</h2>
+                <p class="panel-subtitle">Comparing gross volume (bars) vs net profit margin percentage (dots)</p>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 360px;">
+              <canvas id="categorySalesChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Volume vs Margin Paradox</h2>
+            </div>
+            <div class="insight-box">
+              <div class="stat-highlight">
+                <span class="number">60%+</span>
+                <span class="desc">of revenue generated by Fishing, Cleats, Apparel</span>
+              </div>
+              <p class="insight-text">
+                The highest-volume categories run on narrow <strong>2.3% &ndash; 3.4% margins</strong>. Conversely, niche categories like <em>Golf Bags & Carts (15.95%)</em> and <em>Toys (14.75%)</em> enjoy 4&times; the margin but represent less than 0.1% of sales.
+              </p>
+              <div class="strategy-badge">
+                <strong>Strategic Recommendation:</strong> Institute a minimum 3% gross margin floor on Cleats and Men's Footwear by restricting stackable discount coupons.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel glass" style="margin-top: 1.5rem;">
+          <div class="panel-header">
+            <h2 class="panel-title">Complete 50-Category Performance Matrix</h2>
+            <div class="table-search-box">
+              <input type="text" id="category-search" placeholder="Search product category...">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="category-data-table">
+              <thead>
+                <tr>
+                  <th>Category Name</th>
+                  <th>Total Sales (USD)</th>
+                  <th>Total Profit (USD)</th>
+                  <th>Order Items</th>
+                  <th>Margin %</th>
+                  <th>Margin Category</th>
+                </tr>
+              </thead>
+              <tbody id="category-table-body">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content 4: Carrier SLAs & Delivery -->
+      <section class="tab-pane" id="tab-delivery">
+        <div class="content-grid one-one">
+          <div class="panel glass">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Carrier SLA Failure Rate & Shipment Volume</h2>
+                <p class="panel-subtitle">Percentage of shipments arriving after scheduled date by shipping mode</p>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 320px;">
+              <canvas id="deliveryModeChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel glass">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Scheduled vs Actual Transit Duration</h2>
+                <p class="panel-subtitle">Comparing average promise time vs true delivery time (days)</p>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 320px;">
+              <canvas id="deliveryDurationChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel glass" style="margin-top: 1.5rem;">
+          <div class="panel-header">
+            <h2 class="panel-title">Carrier Performance Audit Table</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fulfillment Mode</th>
+                  <th>Total Shipments</th>
+                  <th>Late Shipments</th>
+                  <th>Scheduled (Avg Days)</th>
+                  <th>Actual (Avg Days)</th>
+                  <th>Average Delay</th>
+                  <th>Late Rate %</th>
+                  <th>Risk Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="alert-row">
+                  <td><strong>First Class</strong></td>
+                  <td>27,814</td>
+                  <td>26,513</td>
+                  <td>1.00 days</td>
+                  <td>2.00 days</td>
+                  <td>+1.00 days</td>
+                  <td><span class="badge-danger">95.32%</span></td>
+                  <td><span class="tag-critical">CRITICAL SLA RISK</span></td>
+                </tr>
+                <tr class="alert-row-medium">
+                  <td><strong>Second Class</strong></td>
+                  <td>35,216</td>
+                  <td>26,987</td>
+                  <td>2.00 days</td>
+                  <td>3.99 days</td>
+                  <td>+1.99 days</td>
+                  <td><span class="badge-danger">76.63%</span></td>
+                  <td><span class="tag-critical">HIGH DELAY RISK</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Same Day</strong></td>
+                  <td>9,737</td>
+                  <td>4,454</td>
+                  <td>0.00 days</td>
+                  <td>0.48 days</td>
+                  <td>+0.48 days</td>
+                  <td><span class="badge-warning">45.74%</span></td>
+                  <td><span class="tag-medium">MODERATE RISK</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Standard Class</strong></td>
+                  <td>107,752</td>
+                  <td>41,023</td>
+                  <td>4.00 days</td>
+                  <td>4.00 days</td>
+                  <td>&plusmn;0.00 days</td>
+                  <td><span class="badge-success">38.07%</span></td>
+                  <td><span class="tag-healthy">MOST RELIABLE</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content 5: Regional Distribution -->
+      <section class="tab-pane" id="tab-regions">
+        <div class="content-grid two-one">
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Global Market Revenue & Profit Comparison</h2>
+              <p class="panel-subtitle">Regional breakdown of total order volume and net profit margin</p>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 340px;">
+              <canvas id="regionalBarChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Customer Segment Profitability</h2>
+            </div>
+            <div class="segment-cards">
+              <div class="segment-card">
+                <div class="segment-header">
+                  <span class="seg-name">Consumer</span>
+                  <span class="seg-share">51.9% of orders</span>
+                </div>
+                <div class="seg-val">$727,921 Net Profit</div>
+                <div class="seg-meta">34,119 orders &bull; $21.33 avg profit/order</div>
+              </div>
+
+              <div class="segment-card">
+                <div class="segment-header">
+                  <span class="seg-name">Corporate</span>
+                  <span class="seg-share">30.2% of orders</span>
+                </div>
+                <div class="seg-val">$420,088 Net Profit</div>
+                <div class="seg-meta">19,856 orders &bull; $21.16 avg profit/order</div>
+              </div>
+
+              <div class="segment-card">
+                <div class="segment-header">
+                  <span class="seg-name">Home Office</span>
+                  <span class="seg-share">17.9% of orders</span>
+                </div>
+                <div class="seg-val">$240,643 Net Profit</div>
+                <div class="seg-meta">11,777 orders &bull; $20.43 avg profit/order</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content 6: Machine Learning Risk Simulator -->
+      <section class="tab-pane" id="tab-simulator">
+        <div class="content-grid two-one">
+          <div class="panel glass">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Live Late Delivery Risk Simulator</h2>
+                <p class="panel-subtitle">Real-time inference using the Logistic Regression model trained on 144,650 order items</p>
+              </div>
+              <span class="badge-tag">Model: ROC-AUC 0.7388 | Precision 84.15%</span>
+            </div>
+
+            <form class="simulator-form" id="risk-simulator-form" onsubmit="return false;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="sim-shipping-mode">Shipping Mode</label>
+                  <select id="sim-shipping-mode" class="form-control">
+                    <option value="First Class">First Class (1 day scheduled)</option>
+                    <option value="Second Class">Second Class (2 days scheduled)</option>
+                    <option value="Same Day">Same Day (0 days scheduled)</option>
+                    <option value="Standard Class" selected>Standard Class (4 days scheduled)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="sim-market">Destination Market</label>
+                  <select id="sim-market" class="form-control">
+                    <option value="Europe" selected>Europe</option>
+                    <option value="Latam">Latam</option>
+                    <option value="Pacific Asia">Pacific Asia</option>
+                    <option value="Usca">USCA</option>
+                    <option value="Africa">Africa</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="sim-category">Product Category</label>
+                  <select id="sim-category" class="form-control">
+                    <option value="Fishing" selected>Fishing ($6.93M volume)</option>
+                    <option value="Cleats">Cleats ($4.43M volume)</option>
+                    <option value="Camping & Hiking">Camping & Hiking ($4.12M volume)</option>
+                    <option value="Cardio Equipment">Cardio Equipment ($3.69M volume)</option>
+                    <option value="Women's Apparel">Women's Apparel ($3.15M volume)</option>
+                    <option value="Water Sports">Water Sports</option>
+                    <option value="Men's Footwear">Men's Footwear</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="sim-segment">Customer Segment</label>
+                  <select id="sim-segment" class="form-control">
+                    <option value="Consumer" selected>Consumer</option>
+                    <option value="Corporate">Corporate</option>
+                    <option value="Home Office">Home Office</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="sim-price">Order Item Total (USD)</label>
+                  <input type="number" id="sim-price" class="form-control" value="150" min="5" max="5000">
+                </div>
+
+                <div class="form-group">
+                  <label for="sim-discount">Item Discount Rate (%)</label>
+                  <input type="number" id="sim-discount" class="form-control" value="10" min="0" max="60" step="1">
+                </div>
+              </div>
+
+              <button type="button" class="btn-predict" id="btn-predict-risk">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                <span>Calculate Late Delivery Risk</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="panel glass">
+            <div class="panel-header">
+              <h2 class="panel-title">Model Prediction Result</h2>
+            </div>
+
+            <div class="prediction-output-card" id="prediction-output">
+              <div class="gauge-container">
+                <div class="risk-score-circle" id="risk-score-display">
+                  <span class="score-num" id="risk-percent-num">38%</span>
+                  <span class="score-label">Risk Probability</span>
+                </div>
+              </div>
+
+              <div class="risk-badge-box">
+                <span class="risk-level-tag tag-healthy" id="risk-level-tag">Low Risk</span>
+              </div>
+
+              <div class="recommendation-box" id="risk-recommendation">
+                <h4>Carrier Dispatch Advisory</h4>
+                <p id="risk-advisory-text">Standard Class has a reliable 4-day fulfillment timeline. Probability of late delivery is within acceptable operating tolerance.</p>
+              </div>
+
+              <div class="model-meta-box">
+                <div class="meta-line"><span>Engine:</span> <code>Logistic Regression (GroupSplit)</code></div>
+                <div class="meta-line"><span>Precision:</span> <code>84.15%</code></div>
+                <div class="meta-line"><span>ROC-AUC:</span> <code>0.7388</code></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

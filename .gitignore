@@ -18,6 +18,10 @@ __pycache__/
 dist/
 build/
 
+# ── Node / Web ────────────────────────────────────────────────────
+node_modules/
+.npm/
+
 # ── Virtual environments ──────────────────────────────────────────
 venv/
 .venv/

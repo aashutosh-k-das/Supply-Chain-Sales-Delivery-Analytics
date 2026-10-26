@@ -1,0 +1,17 @@
+{
+  "name": "supply-chain-analytics-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Executive Interactive Web Dashboard for Supply Chain Sales, Profitability & Delivery Performance Analytics",
+  "scripts": {
+    "dev": "vite web-dashboard --port 5173 --host",
+    "build": "vite build web-dashboard",
+    "preview": "vite preview web-dashboard"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.8"
+  }
+}

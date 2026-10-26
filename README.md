@@ -156,9 +156,18 @@ pip install -r requirements.txt
 
 ## 🔄 How to Reproduce the Analysis
 
-### Option A: One-Command Master Runner (Recommended)
+### Option A: Interactive Web Dashboard (Vite + Modern UI)
 
-Run the entire end-to-end pipeline (cleaning, validation, analytics, ML model, tests) with a single command:
+Launch the interactive executive dashboard in your browser with a single command:
+
+```bash
+npm run dev
+```
+> Open **http://localhost:5173/** to explore interactive Chart.js visualizations, searchable category matrices, and the live ML late-delivery risk simulator!
+
+### Option B: One-Command Python Master Runner
+
+Run the entire end-to-end data pipeline (cleaning, validation, analytics, ML model, tests) from the terminal:
 
 ```bash
 python main.py
