@@ -1,0 +1,7 @@
+metric,value,note
+Total Sales (USD),36784735.01,Sum of sales column across all order-items
+Total Profit (USD),1388652.06,Sum of order_profit_per_order deduplicated by order_id
+Total Item Revenue (USD),33054402.38,Sum of order_item_total across all rows
+Distinct Orders,65752.0,Count of unique order_id values
+Average Order Value (USD),559.45,Total Sales / Distinct Orders
+Average Profit Per Order (USD),21.12,Total Profit / Distinct Orders
