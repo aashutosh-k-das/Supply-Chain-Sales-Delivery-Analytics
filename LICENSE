@@ -1,0 +1,35 @@
+MIT License
+
+Copyright (c) 2024 [Your Name]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+─────────────────────────────────────────────────────────────────────────────
+DATASET ATTRIBUTION
+─────────────────────────────────────────────────────────────────────────────
+This project uses the DataCo Smart Supply Chain Dataset published on Kaggle:
+
+  Title  : DataCo Smart Supply Chain for Big Data Analysis
+  Source : https://www.kaggle.com/datasets/shashwatwork/dataco-smart-supply-chain-for-big-data-analysis
+  License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
+           https://cdla.dev/sharing-1-0/
+
+The raw dataset is NOT included in this repository as required by the license.
+Please download it directly from Kaggle and place it at:
+  data/raw/DataCoSupplyChainDataset.csv

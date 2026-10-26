@@ -1,0 +1,20 @@
+# Supply Chain Analytics – Python Dependencies
+# Install with: pip install -r requirements.txt
+# Tested on Python 3.14 (also compatible with 3.10+)
+
+# ── Core data stack ───────────────────────────────────────────
+pandas>=2.0.0
+numpy>=1.26.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+scikit-learn>=1.3.0      # For optional predictive extension
+openpyxl>=3.1.0          # Excel I/O (for Power BI export if needed)
+
+# ── Notebooks ─────────────────────────────────────────────────
+jupyter>=1.0.0
+notebook>=7.0.0
+nbformat>=5.9.0
+
+# ── Testing ───────────────────────────────────────────────────
+pytest>=8.0.0
+pytest-cov>=4.0.0
