@@ -1,0 +1,28 @@
+step,column,rows_affected,action
+load,—,180519,loaded 180519 rows × 53 cols
+remove_exact_duplicates,ALL,0,dropped
+parse_dates,order_date_dateorders,0,coerced to NaT
+parse_dates,shipping_date_dateorders,0,coerced to NaT
+audit_missing,product_description,180519,100.0% missing – no imputation applied
+audit_missing,order_zipcode,155679,86.24% missing – no imputation applied
+audit_missing,customer_lname,8,0.0% missing – no imputation applied
+audit_missing,customer_zipcode,3,0.0% missing – no imputation applied
+standardise_categoricals,type,180519,stripped whitespace + title-cased
+standardise_categoricals,delivery_status,180519,stripped whitespace + title-cased
+standardise_categoricals,late_delivery_risk,180519,stripped whitespace + title-cased
+standardise_categoricals,category_name,180519,stripped whitespace + title-cased
+standardise_categoricals,customer_segment,180519,stripped whitespace + title-cased
+standardise_categoricals,department_name,180519,stripped whitespace + title-cased
+standardise_categoricals,market,180519,stripped whitespace + title-cased
+standardise_categoricals,order_country,180519,stripped whitespace + title-cased
+standardise_categoricals,order_region,180519,stripped whitespace + title-cased
+standardise_categoricals,order_state,180519,stripped whitespace + title-cased
+standardise_categoricals,order_city,180519,stripped whitespace + title-cased
+standardise_categoricals,order_status,180519,stripped whitespace + title-cased
+standardise_categoricals,shipping_mode,180519,stripped whitespace + title-cased
+standardise_categoricals,customer_country,180519,stripped whitespace + title-cased
+standardise_categoricals,customer_state,180519,stripped whitespace + title-cased
+standardise_categoricals,customer_city,180519,stripped whitespace + title-cased
+derive_columns,shipping_delay_days,180519,created: days_for_shipping_real - days_for_shipment_scheduled
+derive_columns,order_year_month,180519,created from order_date_dateorders
+derive_columns,is_late_derived,103400,1 if shipping_delay_days > 0
