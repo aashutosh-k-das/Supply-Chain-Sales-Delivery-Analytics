@@ -1,0 +1,22 @@
+check,passed,detail
+schema:order_id,True,present
+schema:sales,True,present
+schema:order_item_total,True,present
+schema:order_profit_per_order,True,present
+schema:order_date_dateorders,True,present
+schema:shipping_mode,True,present
+schema:category_name,True,present
+schema:market,True,present
+no_exact_duplicates,True,0 exact duplicates found
+date_dtype:order_date_dateorders,True,datetime64
+date_dtype:shipping_date_dateorders,True,datetime64
+numeric_dtype:sales,True,float64
+numeric_dtype:order_item_total,True,float64
+numeric_dtype:order_profit_per_order,True,float64
+numeric_dtype:days_for_shipping_real,True,int64
+numeric_dtype:days_for_shipment_scheduled,True,int64
+order_id_not_null,True,0 nulls
+sales_non_negative,True,0 rows with negative sales (review manually)
+late_delivery_binary,True,values: [0 1]
+date_range_no_future,True,"Range: 2015-01-01 → 2018-01-31, future rows: 0"
+minimum_row_count,True,"180,519 rows (min expected: 10,000)"
