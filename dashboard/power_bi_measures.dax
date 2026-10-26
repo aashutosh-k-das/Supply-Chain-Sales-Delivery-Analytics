@@ -1,0 +1,251 @@
+// ============================================================
+// DataCo Supply Chain Analytics – Power BI DAX Measures
+// ============================================================
+// File: dashboard/power_bi_measures.dax
+// Dataset: DataCo Smart Supply Chain (DataCoSupplyChainDataset.csv)
+// Source table in Power BI: supply_chain_clean  (cleaned CSV)
+// ============================================================
+//
+// IMPORTANT NOTES
+// ---------------
+// 1. The transaction grain is ORDER ITEM (one row per item per order).
+//    Many orders contain multiple items sharing the same order_id.
+// 2. Profit (order_profit_per_order) is recorded at ORDER level.
+//    Always deduplicate by order_id before summing profit to avoid
+//    double-counting.
+// 3. Sales (sales) is at ORDER-ITEM level – sum all rows.
+// 4. late_delivery_risk is a pre-computed label in the source dataset.
+//    It marks whether a shipment is at risk of being late.
+// ============================================================
+
+
+// ──────────────────────────────────────────────────────────────
+// 1. CORE REVENUE MEASURES
+// ──────────────────────────────────────────────────────────────
+
+// Total Sales (sum of order-item sales across all rows)
+Total Sales =
+    SUM( supply_chain_clean[sales] )
+
+
+// Total Item Revenue (sum of order_item_total across all rows)
+Total Item Revenue =
+    SUM( supply_chain_clean[order_item_total] )
+
+
+// ──────────────────────────────────────────────────────────────
+// 2. PROFIT MEASURES (deduplication required)
+// ──────────────────────────────────────────────────────────────
+
+// Total Profit
+// Deduplication approach: SUMX over distinct order IDs to avoid
+// double-counting profit recorded at order level.
+Total Profit =
+    SUMX(
+        DISTINCT( supply_chain_clean[order_id] ),
+        CALCULATE(
+            MAX( supply_chain_clean[order_profit_per_order] )
+        )
+    )
+
+
+// Profit Margin %
+Profit Margin % =
+    DIVIDE(
+        [Total Profit],
+        [Total Sales],
+        0
+    ) * 100
+
+
+// Average Profit per Order
+Avg Profit per Order =
+    DIVIDE(
+        [Total Profit],
+        [Distinct Orders],
+        0
+    )
+
+
+// ──────────────────────────────────────────────────────────────
+// 3. ORDER COUNT MEASURES
+// ──────────────────────────────────────────────────────────────
+
+// Distinct Orders (count of unique order_id values)
+Distinct Orders =
+    DISTINCTCOUNT( supply_chain_clean[order_id] )
+
+
+// Total Order-Item Rows (transaction count – use sparingly)
+Total Order Items =
+    COUNTROWS( supply_chain_clean )
+
+
+// ──────────────────────────────────────────────────────────────
+// 4. AVERAGE ORDER VALUE
+// ──────────────────────────────────────────────────────────────
+
+// Average Order Value (AOV)
+// Definition: Total Sales ÷ Distinct Orders
+// This is the average revenue generated per unique order.
+Average Order Value =
+    DIVIDE(
+        [Total Sales],
+        [Distinct Orders],
+        0
+    )
+
+
+// ──────────────────────────────────────────────────────────────
+// 5. DELIVERY PERFORMANCE MEASURES
+// ──────────────────────────────────────────────────────────────
+
+// Late Delivery Count
+// Uses the pre-computed label in the source data.
+Late Deliveries =
+    CALCULATE(
+        COUNTROWS( supply_chain_clean ),
+        supply_chain_clean[late_delivery_risk] = 1
+    )
+
+
+// Total Eligible Shipments (for late rate denominator)
+// Exclude rows where late_delivery_risk is blank.
+Total Eligible Shipments =
+    CALCULATE(
+        COUNTROWS( supply_chain_clean ),
+        NOT ISBLANK( supply_chain_clean[late_delivery_risk] )
+    )
+
+
+// Late Delivery Rate %
+// Denominator: rows with a non-blank late_delivery_risk value.
+Late Delivery Rate % =
+    DIVIDE(
+        [Late Deliveries],
+        [Total Eligible Shipments],
+        BLANK()
+    ) * 100
+
+
+// ──────────────────────────────────────────────────────────────
+// 6. SHIPPING DURATION MEASURES
+// ──────────────────────────────────────────────────────────────
+
+// Average Actual Shipping Days
+Avg Actual Shipping Days =
+    AVERAGE( supply_chain_clean[days_for_shipping_real] )
+
+
+// Average Scheduled Shipping Days
+Avg Scheduled Shipping Days =
+    AVERAGE( supply_chain_clean[days_for_shipment_scheduled] )
+
+
+// Average Shipping Delay (Actual – Scheduled; positive = late)
+Avg Shipping Delay Days =
+    AVERAGEX(
+        supply_chain_clean,
+        supply_chain_clean[days_for_shipping_real]
+            - supply_chain_clean[days_for_shipment_scheduled]
+    )
+
+
+// ──────────────────────────────────────────────────────────────
+// 7. PERIOD-OVER-PERIOD (requires a Date Table)
+// ──────────────────────────────────────────────────────────────
+// To use these, create a Date Table in Power BI:
+//   DateTable = CALENDARAUTO()  or link to order_date_dateorders
+// Then create a relationship: DateTable[Date] → supply_chain_clean[order_date_dateorders]
+
+// Sales – Previous Month (requires Date Table relationship)
+Sales PM =
+    CALCULATE(
+        [Total Sales],
+        PREVIOUSMONTH( DateTable[Date] )
+    )
+
+
+// Month-over-Month Sales Growth %
+Sales MoM Growth % =
+    DIVIDE(
+        [Total Sales] - [Sales PM],
+        [Sales PM],
+        BLANK()
+    ) * 100
+
+
+// Profit – Previous Month
+Profit PM =
+    CALCULATE(
+        [Total Profit],
+        PREVIOUSMONTH( DateTable[Date] )
+    )
+
+
+// Month-over-Month Profit Growth %
+Profit MoM Growth % =
+    DIVIDE(
+        [Total Profit] - [Profit PM],
+        [Profit PM],
+        BLANK()
+    ) * 100
+
+
+// ──────────────────────────────────────────────────────────────
+// 8. CALCULATED COLUMNS (add to the table, not as measures)
+// ──────────────────────────────────────────────────────────────
+
+// Shipping Delay (Calculated Column)
+// Shipping Delay Days = supply_chain_clean[days_for_shipping_real]
+//                     - supply_chain_clean[days_for_shipment_scheduled]
+// Positive value → shipment was late.
+// [Already derived in Python; verify column 'shipping_delay_days' exists]
+
+
+// Is Late Derived (Calculated Column – alternative)
+// Is Late Derived = IF( [shipping_delay_days] > 0, 1, 0 )
+
+
+// Order Year-Month (Calculated Column – if not already in data)
+// Order YearMonth = FORMAT( supply_chain_clean[order_date_dateorders], "YYYY-MM" )
+
+
+// ──────────────────────────────────────────────────────────────
+// 9. DATE TABLE (paste into Power BI DAX editor)
+// ──────────────────────────────────────────────────────────────
+// Create a dedicated date table for time intelligence:
+//
+// DateTable =
+//     VAR MinDate = MIN( supply_chain_clean[order_date_dateorders] )
+//     VAR MaxDate = MAX( supply_chain_clean[order_date_dateorders] )
+//     RETURN
+//         ADDCOLUMNS(
+//             CALENDAR( MinDate, MaxDate ),
+//             "Year",         YEAR([Date]),
+//             "Month",        MONTH([Date]),
+//             "Month Name",   FORMAT([Date], "MMM"),
+//             "Year-Month",   FORMAT([Date], "YYYY-MM"),
+//             "Quarter",      "Q" & QUARTER([Date]),
+//             "Week",         WEEKNUM([Date])
+//         )
+//
+// Mark DateTable as a Date Table (right-click → Mark as date table → Date column = [Date])
+// Create relationship: DateTable[Date] → supply_chain_clean[order_date_dateorders]
+
+
+// ──────────────────────────────────────────────────────────────
+// 10. FORMATTING NOTES
+// ──────────────────────────────────────────────────────────────
+// Total Sales              → Format: Currency, $#,##0.00
+// Total Profit             → Format: Currency, $#,##0.00
+// Total Item Revenue       → Format: Currency, $#,##0.00
+// Average Order Value      → Format: Currency, $#,##0.00
+// Avg Profit per Order     → Format: Currency, $#,##0.00
+// Distinct Orders          → Format: Whole Number, #,##0
+// Late Delivery Rate %     → Format: Percentage, 0.00%
+// Profit Margin %          → Format: Percentage, 0.00%
+// Sales MoM Growth %       → Format: Percentage, 0.00%
+// Avg Actual Shipping Days → Format: Decimal, 0.0
+// Avg Scheduled Ship Days  → Format: Decimal, 0.0
+// Avg Shipping Delay Days  → Format: Decimal, 0.0
