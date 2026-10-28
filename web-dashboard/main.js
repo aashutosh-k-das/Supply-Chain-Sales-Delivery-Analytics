@@ -3,17 +3,31 @@ import { KPI_DATA, MONTHLY_DATA, CATEGORY_DATA, REGIONAL_DATA, DELIVERY_DATA, ML
 
 Chart.register(...registerables);
 
-// Chart.js global dark theme defaults
-Chart.defaults.color = '#94a3b8';
-Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)';
-Chart.defaults.plugins.tooltip.titleColor = '#f8fafc';
-Chart.defaults.plugins.tooltip.bodyColor = '#e2e8f0';
-Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.1)';
-Chart.defaults.plugins.tooltip.borderWidth = 1;
-Chart.defaults.plugins.tooltip.padding = 10;
-Chart.defaults.plugins.tooltip.cornerRadius = 8;
-Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
+// Chart.js defaults to match the page (light paper, muted ink)
+Chart.defaults.color = '#6b6a63';
+Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1f1f1c';
+Chart.defaults.plugins.tooltip.titleColor = '#f7f5f0';
+Chart.defaults.plugins.tooltip.bodyColor = '#e6e2d8';
+Chart.defaults.plugins.tooltip.padding = 8;
+Chart.defaults.plugins.tooltip.cornerRadius = 2;
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.boxHeight = 12;
+Chart.defaults.borderColor = 'rgba(31, 31, 28, 0.08)';
+Chart.defaults.elements.bar.borderRadius = 0;
+Chart.defaults.elements.point.radius = 0;
+Chart.defaults.elements.point.hoverRadius = 4;
+
+const C = {
+  ink: '#1f1f1c',
+  blue: '#3d5a80',
+  rust: '#b4532a',
+  green: '#4f7a4a',
+  ochre: '#b8862f',
+  red: '#a63d32',
+  plum: '#7a5c7e',
+};
 
 // Formatters
 const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
@@ -63,18 +77,16 @@ function initOverviewTrendChart(mode = 'combined') {
           {
             label: 'Total Sales ($)',
             data: sales,
-            backgroundColor: 'rgba(56, 189, 248, 0.65)',
-            borderColor: '#38bdf8',
-            borderWidth: 1,
-            borderRadius: 4,
+            backgroundColor: C.blue,
+            borderWidth: 0,
             yAxisID: 'y',
           },
           {
             type: 'line',
             label: 'Net Profit ($)',
             data: profit,
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderColor: C.green,
+            backgroundColor: 'transparent',
             fill: true,
             tension: 0.35,
             borderWidth: 2,
@@ -112,8 +124,8 @@ function initOverviewTrendChart(mode = 'combined') {
           {
             label: 'Profit Margin %',
             data: margin,
-            borderColor: '#f59e0b',
-            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+            borderColor: C.ochre,
+            backgroundColor: 'rgba(184, 134, 47, 0.12)',
             fill: true,
             tension: 0.35,
             borderWidth: 2.5,
@@ -150,13 +162,7 @@ function initOverviewShippingChart() {
         {
           label: 'Late Delivery Rate %',
           data: modes.map((m) => m.late_rate_pct),
-          backgroundColor: [
-            'rgba(244, 63, 94, 0.85)',
-            'rgba(245, 158, 11, 0.85)',
-            'rgba(168, 85, 247, 0.85)',
-            'rgba(56, 189, 248, 0.85)',
-          ],
-          borderRadius: 6,
+          backgroundColor: modes.map((m) => (m.late_rate_pct >= 50 ? C.red : '#b9b4a8')),
         },
       ],
     },
@@ -195,9 +201,9 @@ function initOverviewRegionDoughnut() {
       datasets: [
         {
           data: REGIONAL_DATA.map((r) => r.total_sales),
-          backgroundColor: ['#38bdf8', '#6366f1', '#10b981', '#f59e0b', '#ec4899'],
+          backgroundColor: [C.blue, C.rust, C.green, C.ochre, C.plum],
           borderWidth: 2,
-          borderColor: '#131c31',
+          borderColor: '#fffefb',
         },
       ],
     },
@@ -212,7 +218,7 @@ function initOverviewRegionDoughnut() {
           },
         },
       },
-      cutout: '68%',
+      cutout: '60%',
     },
   });
 }
@@ -231,8 +237,8 @@ function initFullTrendsChart() {
         {
           label: 'Sales Revenue ($)',
           data: MONTHLY_DATA.map((d) => d.total_sales),
-          borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56, 189, 248, 0.08)',
+          borderColor: C.blue,
+          backgroundColor: 'rgba(61, 90, 128, 0.08)',
           fill: true,
           tension: 0.35,
           borderWidth: 2.5,
@@ -241,9 +247,9 @@ function initFullTrendsChart() {
         {
           label: 'Distinct Orders',
           data: MONTHLY_DATA.map((d) => d.order_count),
-          borderColor: '#a855f7',
+          borderColor: C.ink,
           backgroundColor: 'transparent',
-          borderDash: [5, 5],
+          borderDash: [4, 3],
           tension: 0.35,
           borderWidth: 2,
           yAxisID: 'y1',
@@ -284,8 +290,7 @@ function initCategorySalesChart() {
         {
           label: 'Sales (USD)',
           data: top10.map((c) => c.total_sales),
-          backgroundColor: 'rgba(99, 102, 241, 0.75)',
-          borderRadius: 6,
+          backgroundColor: C.blue,
         },
       ],
     },
@@ -323,18 +328,17 @@ function initDeliveryModeChart() {
         {
           label: 'Total Shipments',
           data: modes.map((m) => m.total_shipments),
-          backgroundColor: 'rgba(56, 189, 248, 0.4)',
-          borderRadius: 6,
+          backgroundColor: '#c9cfd8',
           yAxisID: 'y',
         },
         {
           type: 'line',
           label: 'Late Rate %',
           data: modes.map((m) => m.late_rate_pct),
-          borderColor: '#f43f5e',
+          borderColor: C.red,
           borderWidth: 3,
-          pointRadius: 6,
-          pointBackgroundColor: '#f43f5e',
+          pointRadius: 4,
+          pointBackgroundColor: C.red,
           yAxisID: 'y1',
         },
       ],
@@ -369,14 +373,12 @@ function initDeliveryDurationChart() {
         {
           label: 'Scheduled Days',
           data: modes.map((m) => m.avg_scheduled_days),
-          backgroundColor: 'rgba(16, 185, 129, 0.75)',
-          borderRadius: 4,
+          backgroundColor: '#b9b4a8',
         },
         {
           label: 'Actual Days Taken',
           data: modes.map((m) => m.avg_actual_days),
-          backgroundColor: 'rgba(244, 63, 94, 0.85)',
-          borderRadius: 4,
+          backgroundColor: C.red,
         },
       ],
     },
@@ -403,15 +405,14 @@ function initRegionalBarChart() {
         {
           label: 'Total Sales ($)',
           data: REGIONAL_DATA.map((r) => r.total_sales),
-          backgroundColor: 'rgba(56, 189, 248, 0.7)',
-          borderRadius: 6,
+          backgroundColor: C.blue,
           yAxisID: 'y',
         },
         {
           type: 'line',
           label: 'Profit Margin %',
           data: REGIONAL_DATA.map((r) => r.profit_margin_pct),
-          borderColor: '#10b981',
+          borderColor: C.green,
           borderWidth: 2.5,
           pointRadius: 5,
           yAxisID: 'y1',
@@ -496,7 +497,7 @@ function renderCategoryTable(searchTerm = '') {
     .join('');
 }
 
-// Machine Learning Risk Simulator
+// Late-delivery risk estimator
 function setupRiskSimulator() {
   const predictBtn = document.getElementById('btn-predict-risk');
   const scoreNum = document.getElementById('risk-percent-num');
@@ -528,26 +529,20 @@ function setupRiskSimulator() {
     scoreNum.textContent = `${probPercent}%`;
 
     if (probPercent >= 75) {
-      circle.style.borderColor = '#f43f5e';
-      circle.style.boxShadow = '0 0 30px rgba(244, 63, 94, 0.3)';
-      circle.style.background = 'rgba(244, 63, 94, 0.1)';
+      circle.dataset.level = 'high';
       levelTag.className = 'risk-level-tag tag-critical';
-      levelTag.textContent = 'Severe SLA Delay Risk';
-      advisoryText.innerHTML = `<strong>High Alert:</strong> Courier contracts for <em>${mode}</em> fail scheduled timelines over 75% of the time. Advise proactive customer notification and investigate dedicated carrier routes to ${market}.`;
+      levelTag.textContent = 'High risk';
+      advisoryText.innerHTML = `<strong>${mode}</strong> misses its promised date more than 75% of the time. For orders to ${market}, it's worth telling the customer up front or switching to Standard Class.`;
     } else if (probPercent >= 45) {
-      circle.style.borderColor = '#f59e0b';
-      circle.style.boxShadow = '0 0 30px rgba(245, 158, 11, 0.3)';
-      circle.style.background = 'rgba(245, 158, 11, 0.1)';
+      circle.dataset.level = 'medium';
       levelTag.className = 'risk-level-tag tag-medium';
-      levelTag.textContent = 'Moderate Delay Risk';
-      advisoryText.innerHTML = `Moderate risk detected for <em>${mode}</em> to ${market}. Monitor dispatch cut-off times and prioritize warehouse packing.`;
+      levelTag.textContent = 'Medium risk';
+      advisoryText.innerHTML = `<strong>${mode}</strong> to ${market} is roughly a coin flip. Shipping before the daily cut-off helps.`;
     } else {
-      circle.style.borderColor = '#10b981';
-      circle.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.3)';
-      circle.style.background = 'rgba(16, 185, 129, 0.1)';
+      circle.dataset.level = 'low';
       levelTag.className = 'risk-level-tag tag-healthy';
-      levelTag.textContent = 'Low Risk (Reliable)';
-      advisoryText.innerHTML = `Standard operating fulfillment timeline is stable. Low probability of carrier overrun to ${market}.`;
+      levelTag.textContent = 'Low risk';
+      advisoryText.innerHTML = `<strong>${mode}</strong> to ${market} usually arrives on time. Nothing unusual here.`;
     }
   });
 }
